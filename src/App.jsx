@@ -1,7 +1,10 @@
 import React from "react";
+import Form from "./component/form";
 
 const App = () => {
-  return <div>App</div>;
+  return <div className="m-5">
+  <Form/>
+  </div>
 };
 
 export default App;
