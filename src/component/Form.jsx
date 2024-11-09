@@ -1,5 +1,7 @@
 import { useState } from "react";
 import crimeType from '../constants/crimeType';
+import { database } from "../firebase/firebase"; 
+import { ref, set } from "firebase/database";
 
 const Form = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +52,20 @@ const Form = () => {
     setIsSubmitting(true);
 
     try {
-      // store to db
+      const reportId = Date.now().toString(); // Timestamp as a simple ID
+
+      // Define the reference to where the data will be stored
+      const reportRef = ref(database, 'reports/' + reportId);
+
+      // Write the data to Firebase Realtime Database
+      await set(reportRef, {
+        crime: formData.crime,
+        location: formData.location,
+        crimeDescription: formData.crimeDescription,
+        victimName: formData.victimName,
+        victimContact: formData.victimContact,
+        victimAge: formData.victimAge,
+      });
      
       setSubmitSuccess(true);
       console.log(formData);
@@ -65,6 +80,7 @@ const Form = () => {
       });
     } catch (error) {
       setFormError("Failed to submit report. Please try again.");
+      console.log(error)
     } finally {
       setIsSubmitting(false);
     }
