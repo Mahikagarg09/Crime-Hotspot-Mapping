@@ -2,13 +2,40 @@ import { useState } from "react";
 import crimeType from '../constants/crimeType';
 import { database } from "../firebase/firebase"; 
 import { ref, set } from "firebase/database";
+import { useState, useEffect, useRef } from "react";
+import Modal from "./Modal";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+// Fix for default marker icons in React Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png"
+});
 
+// Map Selection Component
+const LocationPicker = ({ onLocationSelect }) => {
+  const [position, setPosition] = useState(null);
+
+  const map = useMapEvents({
+    click(e) {
+      const { lat, lng } = e.latlng;
+      setPosition([lat, lng]);
+    },
+  });
+
+  return position === null ? null : <Marker position={position} />;
+};
 const Form = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formError, setFormError] = useState("");
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [formData, setFormData] = useState({
-    crime: "",
+    crimeType: "",
     location: "",
     crimeDescription: "",
     victimName: "",
@@ -23,14 +50,37 @@ const Form = () => {
     }));
   };
 
-  const handleLocationSelect = () => {
-    // Mock location selection - replace with actual maps integration
-    const mockLocation = "123 Main Street, City, Country";
-    handleInputChange("location", mockLocation);
+  const handleLocationSelect = async () => {
+    setIsMapOpen(true);
   };
 
+  const handleMapLocationSelect = async (location) => {
+    try {
+      // Reverse geocoding using Nominatim API
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location[0]}&lon=${location[1]}`
+      );
+      const data = await response.json();
+      console.log(data);
+      
+      
+      const address = data.display_name;
+      setSelectedLocation(location);
+      handleInputChange("location", address);
+      setIsMapOpen(false);
+    } catch (error) {
+      console.error("Error getting address:", error);
+      // Fallback to coordinates if geocoding fails
+      const coords = `${location[0].toFixed(6)}, ${location[1].toFixed(6)}`;
+      setSelectedLocation(location);
+      handleInputChange("location", coords);
+      setIsMapOpen(false);
+    }
+  };
+
+  // ... Rest of the validation and form submission logic remains the same ...
   const validateForm = () => {
-    if (!formData.crime) return "Please select a crime type";
+    if (!formData.crimeType) return "Please select a crime type";
     if (!formData.location) return "Please select a location";
     if (!formData.crimeDescription) return "Please provide a crime description";
     if (!formData.victimName) return "Please enter victim's name";
@@ -70,14 +120,16 @@ const Form = () => {
       setSubmitSuccess(true);
       console.log(formData);
       
+      setSubmitSuccess(true);
       setFormData({
-        crime: "",
+        crimeType: "",
         location: "",
         crimeDescription: "",
         victimName: "",
         victimContact: "",
         victimAge: ""
       });
+      setSelectedLocation(null);
     } catch (error) {
       setFormError("Failed to submit report. Please try again.");
       console.log(error)
@@ -101,12 +153,12 @@ const Form = () => {
               Crime Type
             </label>
             <select
-              value={formData.crime}
-              onChange={(e) => handleInputChange("crime", e.target.value)}
+              value={formData.crimeType}
+              onChange={(e) => handleInputChange("crimeType", e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select crime type</option>
-              {crimeType.map((type) => (
+              {["Theft", "Assault", "Vandalism", "Fraud", "Harassment", "Breaking and Entering", "Other"].map((type) => (
                 <option key={type} value={type}>
                   {type}
                 </option>
@@ -123,7 +175,7 @@ const Form = () => {
               <input
                 value={formData.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Location"
+                placeholder="Click 'Select Location' to choose on map"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 readOnly
               />
@@ -137,6 +189,7 @@ const Form = () => {
             </div>
           </div>
 
+          {/* Rest of the form fields remain the same ... */}
           {/* Crime Description */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -229,6 +282,29 @@ const Form = () => {
           </button>
         </form>
       </div>
+
+      {/* Map Modal */}
+      <Modal isOpen={isMapOpen} onClose={() => setIsMapOpen(false)}>
+        <div className="p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Select Location on Map</h3>
+          <div className="h-96 rounded-lg overflow-hidden">
+            <MapContainer
+              center={[51.505, -0.09]}
+              zoom={13}
+              className="h-full w-full"
+            >
+              {/* <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              /> */}
+              <LocationPicker onLocationSelect={handleMapLocationSelect} />
+            </MapContainer>
+          </div>
+          <div className="mt-4 text-sm text-gray-500">
+            Click on the map to select a location
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
