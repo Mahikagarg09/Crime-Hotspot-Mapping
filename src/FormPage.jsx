@@ -1,6 +1,15 @@
-import Form from './component/Form.jsx';
+import Form from "./component/Form.jsx";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+
 export default function FormPage() {
+  
+  const { userLoggedIn } = useAuth();
+
   return (
-    <Form/>
-  )
+    <>
+      {!userLoggedIn && <Navigate to="/login" replace={true} />}
+      <Form />
+    </>
+  );
 }
