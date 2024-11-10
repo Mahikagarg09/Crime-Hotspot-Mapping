@@ -1,4 +1,4 @@
-import Form from "./component/Form.jsx";
+import Form from "./component/form.jsx";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 

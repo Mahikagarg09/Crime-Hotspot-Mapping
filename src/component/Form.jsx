@@ -1,15 +1,21 @@
-import { useState } from "react";
 import crimeType from '../constants/crimeType';
 import { database } from "../firebase/firebase"; 
 import { ref, set } from "firebase/database";
+import { useState } from "react";
+import Modal from "./Modal";
 
 const Form = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formError, setFormError] = useState("");
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState({});
   const [formData, setFormData] = useState({
     crime: "",
-    location: "",
+    location: {
+      address: "",
+      coordinates: []
+    },
     crimeDescription: "",
     victimName: "",
     victimContact: "",
@@ -23,12 +29,11 @@ const Form = () => {
     }));
   };
 
-  const handleLocationSelect = () => {
-    // Mock location selection - replace with actual maps integration
-    const mockLocation = "123 Main Street, City, Country";
-    handleInputChange("location", mockLocation);
+  const handleLocationSelect = async () => {
+    setIsMapOpen(true);
   };
 
+  // ... Rest of the validation and form submission logic remains the same ...
   const validateForm = () => {
     if (!formData.crime) return "Please select a crime type";
     if (!formData.location) return "Please select a location";
@@ -70,14 +75,19 @@ const Form = () => {
       setSubmitSuccess(true);
       console.log(formData);
       
+      setSubmitSuccess(true);
       setFormData({
         crime: "",
-        location: "",
+        location: {
+          address: "",
+          coordinates: []
+        },
         crimeDescription: "",
         victimName: "",
         victimContact: "",
         victimAge: ""
       });
+      setSelectedLocation(null);
     } catch (error) {
       setFormError("Failed to submit report. Please try again.");
       console.log(error)
@@ -106,7 +116,7 @@ const Form = () => {
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select crime type</option>
-              {crimeType.map((type) => (
+              {["Theft", "Assault", "Vandalism", "Fraud", "Harassment", "Breaking and Entering", "Other"].map((type) => (
                 <option key={type} value={type}>
                   {type}
                 </option>
@@ -121,9 +131,8 @@ const Form = () => {
             </label>
             <div className="flex gap-2">
               <input
-                value={formData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Location"
+                value={selectedLocation.address}
+                placeholder="Click 'Select Location' to choose on map"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 readOnly
               />
@@ -137,6 +146,7 @@ const Form = () => {
             </div>
           </div>
 
+          {/* Rest of the form fields remain the same ... */}
           {/* Crime Description */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -229,6 +239,9 @@ const Form = () => {
           </button>
         </form>
       </div>
+
+      {/* Map Modal */}
+      <Modal setFormData={setFormData} setSelectedLocation={setSelectedLocation} isOpen={isMapOpen} onClose={() => setIsMapOpen(false)}/>
     </div>
   );
 };
