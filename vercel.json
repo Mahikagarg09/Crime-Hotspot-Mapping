@@ -1,7 +1,3 @@
 {
-  "rewrites":  [
-    {"source": "/", "destination": "/"},
-    {"source": "/form", "destination": "/form"},
-    {"source": "/login", "destination": "/login"}
-  ]
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
 }
