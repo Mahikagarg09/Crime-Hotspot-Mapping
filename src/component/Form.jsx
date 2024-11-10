@@ -1,42 +1,21 @@
-import { useState } from "react";
 import crimeType from '../constants/crimeType';
 import { database } from "../firebase/firebase"; 
 import { ref, set } from "firebase/database";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Modal from "./Modal";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-// Fix for default marker icons in React Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png"
-});
 
-// Map Selection Component
-const LocationPicker = ({ onLocationSelect }) => {
-  const [position, setPosition] = useState(null);
-
-  const map = useMapEvents({
-    click(e) {
-      const { lat, lng } = e.latlng;
-      setPosition([lat, lng]);
-    },
-  });
-
-  return position === null ? null : <Marker position={position} />;
-};
 const Form = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formError, setFormError] = useState("");
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState({});
   const [formData, setFormData] = useState({
-    crimeType: "",
-    location: "",
+    crime: "",
+    location: {
+      address: "",
+      coordinates: []
+    },
     crimeDescription: "",
     victimName: "",
     victimContact: "",
@@ -54,33 +33,9 @@ const Form = () => {
     setIsMapOpen(true);
   };
 
-  const handleMapLocationSelect = async (location) => {
-    try {
-      // Reverse geocoding using Nominatim API
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location[0]}&lon=${location[1]}`
-      );
-      const data = await response.json();
-      console.log(data);
-      
-      
-      const address = data.display_name;
-      setSelectedLocation(location);
-      handleInputChange("location", address);
-      setIsMapOpen(false);
-    } catch (error) {
-      console.error("Error getting address:", error);
-      // Fallback to coordinates if geocoding fails
-      const coords = `${location[0].toFixed(6)}, ${location[1].toFixed(6)}`;
-      setSelectedLocation(location);
-      handleInputChange("location", coords);
-      setIsMapOpen(false);
-    }
-  };
-
   // ... Rest of the validation and form submission logic remains the same ...
   const validateForm = () => {
-    if (!formData.crimeType) return "Please select a crime type";
+    if (!formData.crime) return "Please select a crime type";
     if (!formData.location) return "Please select a location";
     if (!formData.crimeDescription) return "Please provide a crime description";
     if (!formData.victimName) return "Please enter victim's name";
@@ -122,8 +77,11 @@ const Form = () => {
       
       setSubmitSuccess(true);
       setFormData({
-        crimeType: "",
-        location: "",
+        crime: "",
+        location: {
+          address: "",
+          coordinates: []
+        },
         crimeDescription: "",
         victimName: "",
         victimContact: "",
@@ -153,8 +111,8 @@ const Form = () => {
               Crime Type
             </label>
             <select
-              value={formData.crimeType}
-              onChange={(e) => handleInputChange("crimeType", e.target.value)}
+              value={formData.crime}
+              onChange={(e) => handleInputChange("crime", e.target.value)}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select crime type</option>
@@ -173,8 +131,7 @@ const Form = () => {
             </label>
             <div className="flex gap-2">
               <input
-                value={formData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
+                value={selectedLocation.address}
                 placeholder="Click 'Select Location' to choose on map"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 readOnly
@@ -284,27 +241,7 @@ const Form = () => {
       </div>
 
       {/* Map Modal */}
-      <Modal isOpen={isMapOpen} onClose={() => setIsMapOpen(false)}>
-        <div className="p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Select Location on Map</h3>
-          <div className="h-96 rounded-lg overflow-hidden">
-            <MapContainer
-              center={[51.505, -0.09]}
-              zoom={13}
-              className="h-full w-full"
-            >
-              {/* <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              /> */}
-              <LocationPicker onLocationSelect={handleMapLocationSelect} />
-            </MapContainer>
-          </div>
-          <div className="mt-4 text-sm text-gray-500">
-            Click on the map to select a location
-          </div>
-        </div>
-      </Modal>
+      <Modal setFormData={setFormData} setSelectedLocation={setSelectedLocation} isOpen={isMapOpen} onClose={() => setIsMapOpen(false)}/>
     </div>
   );
 };
