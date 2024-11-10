@@ -1,6 +1,8 @@
+import DefaultPage from "./component/DefaultPage";
+
 const App = () => {
   return <div className="m-5">
-  Default page for all users
+  <DefaultPage/>
   </div>
 };
 
