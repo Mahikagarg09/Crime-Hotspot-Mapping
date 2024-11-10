@@ -8,13 +8,12 @@ import L from 'leaflet';
 import ReactDOMServer from 'react-dom/server';
 
 
-// Function to create custom icons using react-icons as SVG
 function createIcon(icon) {
     return L.divIcon({
         className: 'custom-icon',
-        html: ReactDOMServer.renderToString(icon), // Render the React component as an SVG string
-        iconSize: [24, 24], // Adjust size as needed
-        iconAnchor: [16, 32], // Center the icon
+        html: ReactDOMServer.renderToString(icon), 
+        iconSize: [24, 24],
+        iconAnchor: [16, 32],
     });
 }
 
@@ -33,7 +32,9 @@ export default function Map() {
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const center = [28.6139, 77.2090]; // Default center (e.g., New Delhi)
+    const [selectedCrimeType, setSelectedCrimeType] = useState('all');
+
+    const center = [28.6139, 77.2090];
 
     useEffect(() => {
         const reportsRef = ref(database, 'reports');
@@ -47,6 +48,7 @@ export default function Map() {
                         ...data[key],
                     }));
                     setReports(reportsArray);
+                    console.log(reports)
                 } else {
                     console.log('No data available');
                 }
@@ -63,18 +65,43 @@ export default function Map() {
     if (loading) return <div>Loading map...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
-    // Function to format the date from the report ID
     const formatDateFromId = (id) => {
-        const timestamp = parseInt(id, 10); // Convert string ID to a number
-        const date = new Date(timestamp); // Convert to Date object
-        return date.toLocaleString(); // Format the date as a readable string
+        const timestamp = parseInt(id, 10); 
+        const date = new Date(timestamp); 
+        return date.toLocaleString(); 
     };
+
+    const filteredReports = selectedCrimeType === 'all'
+    ? reports
+    : reports.filter(report => report.crime === selectedCrimeType);
 
     return (
         <div className="p-4 max-w-7xl mx-auto bg-gray-50 min-h-screen">
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-900">Crime Hotspot Analysis - India</h1>
                 <p className="text-gray-600 mt-2">Interactive visualization of crime data across India</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {/* Crime Type Filter */}
+                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Crime Type
+                    </label>
+                    <select
+                        value={selectedCrimeType}
+                        onChange={(e) => setSelectedCrimeType(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                         <option value="all">All Crimes</option>
+                        <option value="Theft">Theft</option>
+                        <option value="Assault">Assault</option>
+                        <option value="Vandalism">Vandalism</option>
+                        <option value="Fraud">Fraud</option>
+                        <option value="Harassment">Harassment</option>
+                        <option value="Breaking and Entering">Breaking and Entering</option>
+                    </select>
+                </div>
             </div>
 
             <div className="flex justify-center  rounded-lg shadow-sm border border-gray-200">
@@ -87,10 +114,9 @@ export default function Map() {
                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    {reports.map((report, key) => {
-                        const coordinates = report.location.coordinates; // Adjust based on your data structure
+                    {filteredReports.map((report, key) => {
+                        const coordinates = report.location.coordinates;
                         if (coordinates && coordinates.length === 2) {
-                            // Get the correct icon for the crime type
                             const crimeIcon = crimeTypeIcons[report.crime] || crimeTypeIcons["Other"];
                             const icon = createIcon(crimeIcon);
                             const reportDate = formatDateFromId(report.id);
@@ -107,7 +133,7 @@ export default function Map() {
                                             <div className="space-y-1 text-sm text-gray-600">
                                                 <p><span className="font-bold">Description:</span> {report.crimeDescription}</p>
                                                 <p><span className="font-bold">Location:</span> {report.location.address}</p>
-                                                <p><span className="font-bold">Date:</span> {formatDateFromId(report.id)}</p>
+                                                <p><span className="font-bold">Date:</span> {reportDate}</p>
                                             </div>
                                         </div>
                                     </Popup>
