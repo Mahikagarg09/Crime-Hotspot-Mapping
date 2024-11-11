@@ -70,6 +70,7 @@ const Form = () => {
         victimName: formData.victimName,
         victimContact: formData.victimContact,
         victimAge: formData.victimAge,
+        created_at: new Date().toISOString()
       });
      
       setSubmitSuccess(true);
