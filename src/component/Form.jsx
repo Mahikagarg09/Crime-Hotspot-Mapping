@@ -1,4 +1,3 @@
-import crimeType from '../constants/crimeType';
 import { database } from "../firebase/firebase"; 
 import { ref, set } from "firebase/database";
 import { useState } from "react";

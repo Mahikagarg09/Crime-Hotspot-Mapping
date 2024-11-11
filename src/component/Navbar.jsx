@@ -1,7 +1,11 @@
-import { useAuth } from "../context/AuthContext/index"; // Adjust the import path as needed
-
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext/index"; 
 const Navbar = () => {
-  const { userLoggedIn } = useAuth(); // Get the userLoggedIn state from AuthContext
+  const { userLoggedIn } = useAuth(); 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for toggling the mobile menu
+
+  // Toggle the mobile menu visibility
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   return (
     <nav className="bg-black">
@@ -36,7 +40,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button className="p-2">
+            <button className="p-2" onClick={toggleMobileMenu}>
               <div className="w-6 h-0.5 bg-gray-600 mb-1"></div>
               <div className="w-6 h-0.5 bg-gray-600 mb-1"></div>
               <div className="w-6 h-0.5 bg-gray-600"></div>
@@ -46,17 +50,17 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      <div className="md:hidden">
+      <div className={`md:hidden ${isMobileMenuOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
-          <a href="/" className="block px-3 py-2 text-gray-900 hover:bg-gray-100 rounded-md">
+          <a href="/" className="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">
             Crime Map
           </a>
           {!userLoggedIn ? (
-            <a href="/login" className="block px-3 py-2 text-gray-900 hover:bg-gray-100 rounded-md">
+            <a href="/login" className="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">
               Login
             </a>
           ) : (
-            <a href="/form" className="block px-3 py-2 text-gray-900 hover:bg-gray-100 rounded-md">
+            <a href="/form" className="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">
               Form
             </a>
           )}
