@@ -3,6 +3,7 @@ import { database } from "../firebase/firebase";
 import { ref, set } from "firebase/database";
 import { useState } from "react";
 import Modal from "./Modal";
+import Navbar from './Navbar';
 
 const Form = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,7 +99,10 @@ const Form = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+    <>
+    <Navbar/>
+    <h1 className='text-center text-3xl font-bold mt-8'>File an FIR</h1>
+    <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden mt-4 mb-4">
       <div className="p-6 bg-white border-b border-gray-200">
         <h2 className="text-2xl font-bold text-gray-900">Crime Report Form</h2>
         <p className="mt-1 text-sm text-gray-600">Please fill in all required information about the incident</p>
@@ -244,6 +248,7 @@ const Form = () => {
       {/* Map Modal */}
       <Modal setFormData={setFormData} setSelectedLocation={setSelectedLocation} isOpen={isMapOpen} onClose={() => setIsMapOpen(false)}/>
     </div>
+    </>
   );
 };
 

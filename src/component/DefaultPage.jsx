@@ -73,7 +73,6 @@ export default function Map() {
 
     return (
         <div className="p-4 max-w-7xl mx-auto bg-gray-50 min-h-screen">
-
             <div className=" mb-6 shadow-sm border border-gray-200">
                 <div className="bg-white p-4 rounded-lg">
                     <div className="space-y-4">
