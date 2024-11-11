@@ -92,9 +92,9 @@ const Stats = () => {
   if (error) return <div className="p-4 text-red-500">Error: {error.message}</div>;
 
   return (
+    <>
     <div className="p-4 max-w-7xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Crime Statistics Dashboard</h1>
-      
+    
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Crime Type Distribution */}
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -186,6 +186,7 @@ const Stats = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

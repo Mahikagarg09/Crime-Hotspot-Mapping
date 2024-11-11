@@ -17,10 +17,7 @@ const Navbar = () => {
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-8">
               <a href="/" className="text-white hover:text-blue-600 px-3 py-2 font-medium">
-                Map
-              </a>
-              <a href="/" className="text-white hover:text-blue-600 px-3 py-2 font-medium">
-                Statistics
+                Crime Map
               </a>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" >
                 <a href="/login">Login</a>

@@ -63,7 +63,7 @@ export default function Map() {
             });
     }, []);
 
-    if (loading) return <div>Loading map...</div>;
+    if (loading) return <div className="m-5">Loading..</div>;
     if (error) return <div>Error: {error.message}</div>;
 
 
@@ -73,10 +73,6 @@ export default function Map() {
 
     return (
         <div className="p-4 max-w-7xl mx-auto bg-gray-50 min-h-screen">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Crime Hotspot Analysis - India</h1>
-                <p className="text-gray-600 mt-2">Interactive visualization of crime data across India</p>
-            </div>
 
             <div className=" mb-6 shadow-sm border border-gray-200">
                 <div className="bg-white p-4 rounded-lg">
