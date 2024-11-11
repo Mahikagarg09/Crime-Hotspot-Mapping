@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import crimeType from "../constants/crimeType";
 import "../../node_modules/leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ref, get } from 'firebase/database';
@@ -77,26 +78,65 @@ export default function Map() {
                 <p className="text-gray-600 mt-2">Interactive visualization of crime data across India</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className=" mb-6 shadow-sm border border-gray-200">
                 {/* Crime Type Filter */}
-                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                {/* <div className="bg-white p-4 rounded-lg ">
+                   
+                    <div className="flex space-x-8">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 whitespace-nowrap py-2">
                         Crime Type
                     </label>
-                    <select
-                        value={selectedCrimeType}
-                        onChange={(e) => setSelectedCrimeType(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        <option value="all">All Crimes</option>
-                        <option value="Theft">Theft</option>
-                        <option value="Assault">Assault</option>
-                        <option value="Vandalism">Vandalism</option>
-                        <option value="Fraud">Fraud</option>
-                        <option value="Harassment">Harassment</option>
-                        <option value="Breaking and Entering">Breaking and Entering</option>
-                    </select>
-                </div>
+                        <button
+                            onClick={() => setSelectedCrimeType('all')}
+                            className={`px-6 py-2 rounded-md text-sm font-medium focus:outline-none whitespace-nowrap ${selectedCrimeType === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                            All Crimes
+                        </button>
+                        {crimeType.map((crime) => (
+                            <button
+                                key={crime}
+                                onClick={() => setSelectedCrimeType(crime)}
+                                className={`px-6 py-2 rounded-md text-sm font-medium focus:outline-none whitespace-nowrap ${selectedCrimeType === crime ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                                    }`}
+                            >
+                                {crime}
+                            </button>
+                        ))}
+                    </div>
+                </div> */}
+                 <div className="bg-white p-4 rounded-lg">
+      <div className="space-y-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Crime Type
+        </label>
+        
+        {/* Grid layout for all screen sizes */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
+          <button
+            onClick={() => setSelectedCrimeType('all')}
+            className={`px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors
+              ${selectedCrimeType === 'all' 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-200 hover:bg-gray-300'}`}
+          >
+            All Crimes
+          </button>
+          
+          {crimeType.map((crime) => (
+            <button
+              key={crime}
+              onClick={() => setSelectedCrimeType(crime)}
+              className={`px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors
+                ${selectedCrimeType === crime 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 hover:bg-gray-300'}`}
+            >
+              {crime}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
             </div>
 
             <div className="flex justify-center  rounded-lg shadow-sm border border-gray-200">
