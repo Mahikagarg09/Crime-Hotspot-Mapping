@@ -1,8 +1,12 @@
 import DefaultPage from "./component/DefaultPage";
+import Navbar from "./component/Navbar";
+import Stats from "./component/Stats";
 
 const App = () => {
-  return <div className="m-5">
-  <DefaultPage/>
+  return <div>
+    <Navbar />
+    <DefaultPage />
+    <Stats/>
   </div>
 };
 

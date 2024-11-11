@@ -79,64 +79,37 @@ export default function Map() {
             </div>
 
             <div className=" mb-6 shadow-sm border border-gray-200">
-                {/* Crime Type Filter */}
-                {/* <div className="bg-white p-4 rounded-lg ">
-                   
-                    <div className="flex space-x-8">
-                    <label className="block text-sm font-medium text-gray-700 mb-2 whitespace-nowrap py-2">
-                        Crime Type
-                    </label>
-                        <button
-                            onClick={() => setSelectedCrimeType('all')}
-                            className={`px-6 py-2 rounded-md text-sm font-medium focus:outline-none whitespace-nowrap ${selectedCrimeType === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                        >
-                            All Crimes
-                        </button>
-                        {crimeType.map((crime) => (
+                <div className="bg-white p-4 rounded-lg">
+                    <div className="space-y-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Crime Type
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
                             <button
-                                key={crime}
-                                onClick={() => setSelectedCrimeType(crime)}
-                                className={`px-6 py-2 rounded-md text-sm font-medium focus:outline-none whitespace-nowrap ${selectedCrimeType === crime ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                                    }`}
+                                onClick={() => setSelectedCrimeType('all')}
+                                className={`px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors
+              ${selectedCrimeType === 'all'
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-200 hover:bg-gray-300'}`}
                             >
-                                {crime}
+                                All Crimes
                             </button>
-                        ))}
+
+                            {crimeType.map((crime) => (
+                                <button
+                                    key={crime}
+                                    onClick={() => setSelectedCrimeType(crime)}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors
+                ${selectedCrimeType === crime
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-200 hover:bg-gray-300'}`}
+                                >
+                                    {crime}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </div> */}
-                 <div className="bg-white p-4 rounded-lg">
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">
-          Crime Type
-        </label>
-        
-        {/* Grid layout for all screen sizes */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
-          <button
-            onClick={() => setSelectedCrimeType('all')}
-            className={`px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors
-              ${selectedCrimeType === 'all' 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-gray-200 hover:bg-gray-300'}`}
-          >
-            All Crimes
-          </button>
-          
-          {crimeType.map((crime) => (
-            <button
-              key={crime}
-              onClick={() => setSelectedCrimeType(crime)}
-              className={`px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors
-                ${selectedCrimeType === crime 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-gray-200 hover:bg-gray-300'}`}
-            >
-              {crime}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+                </div>
             </div>
 
             <div className="flex justify-center  rounded-lg shadow-sm border border-gray-200">
