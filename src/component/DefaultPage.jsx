@@ -11,7 +11,7 @@ import ReactDOMServer from 'react-dom/server';
 function createIcon(icon) {
     return L.divIcon({
         className: 'custom-icon',
-        html: ReactDOMServer.renderToString(icon), 
+        html: ReactDOMServer.renderToString(icon),
         iconSize: [24, 24],
         iconAnchor: [16, 32],
     });
@@ -65,15 +65,10 @@ export default function Map() {
     if (loading) return <div>Loading map...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
-    const formatDateFromId = (id) => {
-        const timestamp = parseInt(id, 10); 
-        const date = new Date(timestamp); 
-        return date.toLocaleString(); 
-    };
 
     const filteredReports = selectedCrimeType === 'all'
-    ? reports
-    : reports.filter(report => report.crime === selectedCrimeType);
+        ? reports
+        : reports.filter(report => report.crime === selectedCrimeType);
 
     return (
         <div className="p-4 max-w-7xl mx-auto bg-gray-50 min-h-screen">
@@ -93,7 +88,7 @@ export default function Map() {
                         onChange={(e) => setSelectedCrimeType(e.target.value)}
                         className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
-                         <option value="all">All Crimes</option>
+                        <option value="all">All Crimes</option>
                         <option value="Theft">Theft</option>
                         <option value="Assault">Assault</option>
                         <option value="Vandalism">Vandalism</option>
@@ -119,13 +114,23 @@ export default function Map() {
                         if (coordinates && coordinates.length === 2) {
                             const crimeIcon = crimeTypeIcons[report.crime] || crimeTypeIcons["Other"];
                             const icon = createIcon(crimeIcon);
-                            const reportDate = formatDateFromId(report.id);
+                            const reportDate = new Date(report.created_at);
+                            const formattedDate = reportDate.toLocaleString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: 'numeric',
+                                second: 'numeric',
+                                hour12: true
+                            });
 
                             return (
                                 <Marker
                                     position={coordinates}
                                     icon={icon}
-                                    key={report.id}
+                                    key={key}
                                 >
                                     <Popup>
                                         <div className="p-2">
@@ -133,7 +138,7 @@ export default function Map() {
                                             <div className="space-y-1 text-sm text-gray-600">
                                                 <p><span className="font-bold">Description:</span> {report.crimeDescription}</p>
                                                 <p><span className="font-bold">Location:</span> {report.location.address}</p>
-                                                <p><span className="font-bold">Date:</span> {reportDate}</p>
+                                                <p><span className="font-bold">Date:</span> {formattedDate}</p>
                                             </div>
                                         </div>
                                     </Popup>
